@@ -60,6 +60,18 @@ class OptionGroup
         return $this;
     }
 
+    public function getGroupKind(): GroupKind
+    {
+        return $this->groupKind;
+    }
+
+    public function setGroupKind(GroupKind $groupKind): static
+    {
+        $this->groupKind = $groupKind;
+
+        return $this;
+    }
+
     public function getCustomOptions(): array
     {
         return $this->customOptions->toArray();
