@@ -8,7 +8,7 @@ use Stringkey\OptionMapperBundle\Repository\OptionGroupRepository;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
-#[ORM\Table(name: 'test_option_group')]
+#[ORM\Table(name: 'option_group')]
 #[ORM\UniqueConstraint(name: 'unique_name_idx', columns: ['name'])]
 #[ORM\Entity(repositoryClass: OptionGroupRepository::class)]
 class OptionGroup
