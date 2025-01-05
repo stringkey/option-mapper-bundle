@@ -25,7 +25,8 @@
         "symfony/form": "^6.4 || ^7.0",
         "symfony/dependency-injection": "^6.4 || ^7.0",
         "symfony/http-kernel": "^6.4 || ^7.0",
-        "symfony/uid": "^6.4 || ^7.0"
+        "symfony/uid": "^6.4 || ^7.0",
+        "stringkey/metadata-core-bundle": "*@dev"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^7.2"
