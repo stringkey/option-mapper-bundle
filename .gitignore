@@ -32,7 +32,6 @@
 /bin/*
 !bin/console
 !bin/symfony_requirements
-/vendor/
 
 # Assets and user uploads
 /web/bundles/
@@ -55,4 +54,9 @@
 /.web-server-pid
 
 # Local testing
+/tests/cache
+/tests/.phpunit.result.cache
+
+# dev and test setup
 /composer.lock
+/vendor/
