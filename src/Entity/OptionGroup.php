@@ -2,6 +2,8 @@
 
 namespace Stringkey\OptionMapperBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Stringkey\OptionMapperBundle\Enum\GroupKind;
 use Stringkey\OptionMapperBundle\Repository\OptionGroupRepository;
@@ -26,6 +28,14 @@ class OptionGroup
     #[ORM\Column(name: 'groupKind', type: 'string', nullable: false, enumType: GroupKind::class)]
     protected GroupKind $groupKind = GroupKind::UserDefined;
 
+    #[ORM\OneToMany(targetEntity: CustomOption::class, mappedBy: 'optionGroup', cascade: ['persist'])]
+    private Collection $customOptions;
+
+    public function __construct()
+    {
+        $this->customOptions = new ArrayCollection();
+    }
+
     public function getId(): ?Uuid
     {
         return $this->id;
@@ -46,6 +56,28 @@ class OptionGroup
     public function setName($name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getCustomOptions(): array
+    {
+        return $this->customOptions->toArray();
+    }
+
+    public function addCustomOption(CustomOption $customOption): static
+    {
+        if (!$this->customOptions->contains($customOption)) {
+            $customOption->setOptionGroup($this);
+            $this->customOptions->add($customOption);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomOption(CustomOption $customOption): static
+    {
+        $this->customOptions->removeElement($customOption);
 
         return $this;
     }
