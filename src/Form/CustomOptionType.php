@@ -2,6 +2,7 @@
 
 namespace Stringkey\OptionMapperBundle\Form;
 
+use Stringkey\MetadataCoreBundle\Entity\Context;
 use Stringkey\OptionMapperBundle\Entity\CustomOption;
 use Stringkey\OptionMapperBundle\Entity\OptionGroup;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -17,9 +18,10 @@ class CustomOptionType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('name', TextType::class);
         $builder->add('optionGroup', EntityType::class, ['class' => OptionGroup::class]);
+        $builder->add('name', TextType::class);
         $builder->add('externalReference', TextType::class);
+        $builder->add('context', EntityType::class, ['class' => Context::class]);
     }
 
     /**
