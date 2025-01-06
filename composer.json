@@ -38,13 +38,13 @@
         "symfony/http-kernel": "^6.4 || ^7.0",
         "symfony/uid": "^6.4 || ^7.0",
         "gedmo/doctrine-extensions": "^3.2",
-        "stringkey/metadata-core-bundle": "*@dev"
+        "stringkey/metadata-core-bundle": "*@dev",
+        "stof/doctrine-extensions-bundle": "^1.0"
     },
     "require-dev": {
         "symfony/phpunit-bridge": "^7.2",
         "symfony/test-pack": "dev-main",
         "phpstan/phpstan": "2.1.x-dev",
-        "sebastian/phpcpd": "^6.0",
         "squizlabs/php_codesniffer": "4.0.x-dev",
         "friendsofphp/php-cs-fixer": "dev-master"
     }

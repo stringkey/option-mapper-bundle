@@ -4,9 +4,8 @@ namespace Stringkey\OptionMapperBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
-use Stringkey\EntityMapperBundle\Entity\Option\OptionGroup;
-use Stringkey\EntityMapperBundle\Repository\CustomOptionRepository;
 use Stringkey\MetadataCoreBundle\Entity\Context;
+use Stringkey\OptionMapperBundle\Repository\CustomOptionRepository;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
