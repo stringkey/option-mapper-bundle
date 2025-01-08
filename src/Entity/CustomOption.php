@@ -2,6 +2,7 @@
 
 namespace Stringkey\OptionMapperBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Stringkey\MetadataCoreBundle\Entity\Context;
@@ -35,8 +36,13 @@ class CustomOption
     #[ORM\ManyToOne(targetEntity: Context::class)]
     protected Context $context;
 
+    #[ORM\OneToMany(targetEntity: OptionLink::class, mappedBy: 'customOption', cascade: ['persist'])]
+    protected Collection $optionLinks;
+
     #[ORM\Column(name: 'enabled', type: 'boolean', nullable: false)]
     private bool $enabled = false;
+
+    use TimestampableEntity;
 
     public function getId(): ?Uuid
     {
@@ -73,6 +79,7 @@ class CustomOption
 
         return $this;
     }
+
     public function getContext(): ?Context
     {
         return $this->context;
@@ -107,16 +114,28 @@ class CustomOption
         return $this;
     }
 
-    use TimestampableEntity;
+    public function addOptionLink(OptionLink $optionLink): static
+    {
+        $this->optionLinks->add($optionLink);
 
+        return $this;
+    }
+
+    public function removeOptionLink(OptionLink $optionLink): static
+    {
+        $this->optionLinks->removeElement($optionLink);
+
+        return $this;
+    }
     // todo: Move to service when created
     public static function constructOption(
         OptionGroup $optionGroup,
-        Context $context,
-        string $name,
-        string $externalReference,
-        bool $enabled = true,
-    ): self {
+        Context     $context,
+        string      $name,
+        string      $externalReference,
+        bool        $enabled = true,
+    ): self
+    {
         $customOption = new self();
 
         $customOption->setOptionGroup($optionGroup);
