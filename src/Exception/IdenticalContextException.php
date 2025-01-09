@@ -2,7 +2,7 @@
 
 namespace Stringkey\OptionMapperBundle\Exception;
 
-class UnequalOptionGroupException extends \Exception
+class IdenticalContextException extends \Exception
 {
 
 }

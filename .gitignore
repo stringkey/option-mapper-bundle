@@ -39,7 +39,7 @@
 
 # PHPUnit
 /app/phpunit.xml
-/phpunit.xml
+/tests/phpunit.xml
 
 # Build data
 /build/
@@ -60,3 +60,7 @@
 # dev and test setup
 /composer.lock
 /vendor/
+
+#test related
+/phpunit.xml
+/.phpunit.result.cache

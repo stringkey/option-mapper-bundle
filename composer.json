@@ -42,7 +42,7 @@
         "stof/doctrine-extensions-bundle": "^1.0"
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^7.2",
+        "symfony/phpunit-bridge": "7.3.x-dev",
         "symfony/test-pack": "dev-main",
         "phpstan/phpstan": "2.1.x-dev",
         "squizlabs/php_codesniffer": "4.0.x-dev",

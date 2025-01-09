@@ -137,25 +137,6 @@ class CustomOption
 
         return $this;
     }
-    // todo: Move to service when created
-    public static function constructOption(
-        OptionGroup $optionGroup,
-        Context     $context,
-        string      $name,
-        string      $externalReference,
-        bool        $enabled = true,
-    ): self
-    {
-        $customOption = new self();
-
-        $customOption->setOptionGroup($optionGroup);
-        $customOption->setContext($context);
-        $customOption->setName($name);
-        $customOption->setExternalReference($externalReference);
-        $customOption->setEnabled($enabled);
-
-        return $customOption;
-    }
 
     public function __toString(): string
     {

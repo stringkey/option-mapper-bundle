@@ -24,3 +24,20 @@ in in another context namely 'Action' and 'Adventure'.
 
 The linking can be set up in such a way that the
 based on an option in one context one or more options can be resolved from another option in the same group.
+
+# Testing
+To test the bundle
+run
+```bash
+composer install
+```
+Then run
+```bash
+php ./vendor/bin/phpunit
+```
+or
+```bash
+php ./vendor/bin/simple-phpunit
+```
+
+

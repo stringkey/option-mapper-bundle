@@ -10,12 +10,10 @@ class OptionMapperTestingKernel extends Kernel
 {
     public function registerBundles(): iterable
     {
-        return [
-            new StringkeyOptionMapperBundle()
-        ];
+        return [new StringkeyOptionMapperBundle()];
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
 
     }
