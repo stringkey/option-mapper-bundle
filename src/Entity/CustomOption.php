@@ -2,6 +2,7 @@
 
 namespace Stringkey\OptionMapperBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -43,6 +44,10 @@ class CustomOption
     private bool $enabled = false;
 
     use TimestampableEntity;
+
+    public function __construct() {
+        $this->optionLinks = new ArrayCollection();
+    }
 
     public function getId(): ?Uuid
     {
@@ -112,6 +117,11 @@ class CustomOption
         $this->enabled = $enabled;
 
         return $this;
+    }
+
+    public function getOptionLinks(): array
+    {
+        return $this->optionLinks->toArray();
     }
 
     public function addOptionLink(OptionLink $optionLink): static
