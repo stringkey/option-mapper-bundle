@@ -24,8 +24,8 @@
     "minimum-stability": "dev",
     "repositories": [
         {
-            "type": "path",
-            "url": "../metadata-core-bundle"
+            "type": "vcs",
+            "url": "https://github.com/stringkey/metadata-core-bundle"
         }
     ],
     "require": {
