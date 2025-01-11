@@ -24,14 +24,14 @@ class OptionGroup
 
     #[ORM\Column(name: 'name', type: 'string', unique: true)]
 //  todo:  #[Assert\NotBlank(message: 'Please enter a name for the group.')]
-    protected string $name;
+    private string $name;
 
     #[ORM\Column(name: 'groupKind', type: 'string', nullable: false, enumType: GroupKind::class)]
-    protected GroupKind $groupKind = GroupKind::UserDefined;
+    private GroupKind $groupKind = GroupKind::UserDefined;
 
     #[ORM\JoinColumn(name: 'master_context_id', referencedColumnName: 'id', nullable: true)]
     #[ORM\ManyToOne(targetEntity: Context::class)]
-    protected ?Context $masterContext = null;
+    private ?Context $masterContext = null;
 
     #[ORM\OneToMany(targetEntity: ContextualOption::class, mappedBy: 'optionGroup', cascade: ['persist'])]
     private Collection $contextualOptions;
