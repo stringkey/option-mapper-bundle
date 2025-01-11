@@ -9,16 +9,16 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 use Stringkey\MetadataCoreBundle\Entity\Context;
-use Stringkey\OptionMapperBundle\Entity\CustomOption;
+use Stringkey\OptionMapperBundle\Entity\ContextualOption;
 use Stringkey\OptionMapperBundle\Entity\OptionGroup;
 
-class CustomOptionRepository extends ServiceEntityRepository
+class ContextualOptionRepository extends ServiceEntityRepository
 {
-    const ALIAS = 'customOption';
+    const ALIAS = 'contextualOption';
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, CustomOption::class);
+        parent::__construct($registry, ContextualOption::class);
     }
 
     public function getQueryBuilder(): QueryBuilder
@@ -30,7 +30,7 @@ class CustomOptionRepository extends ServiceEntityRepository
         return $queryBuilder;
     }
 
-    public function findOneByName(string $name, OptionGroup $optionGroup, Context $context): ?CustomOption
+    public function findOneByName(string $name, OptionGroup $optionGroup, Context $context): ?ContextualOption
     {
         $queryBuilder = $this->getQueryBuilder();
 
@@ -63,7 +63,7 @@ class CustomOptionRepository extends ServiceEntityRepository
         OptionGroup $optionGroup,
         Context $context,
         string $externalReference,
-    ): ?CustomOption {
+    ): ?ContextualOption {
         $queryBuilder = $this->getQueryBuilder();
 
         self::addOptionGroupFilter($queryBuilder, $optionGroup);

@@ -28,12 +28,12 @@ class OptionGroup
     #[ORM\Column(name: 'groupKind', type: 'string', nullable: false, enumType: GroupKind::class)]
     protected GroupKind $groupKind = GroupKind::UserDefined;
 
-    #[ORM\OneToMany(targetEntity: CustomOption::class, mappedBy: 'optionGroup', cascade: ['persist'])]
-    private Collection $customOptions;
+    #[ORM\OneToMany(targetEntity: ContextualOption::class, mappedBy: 'optionGroup', cascade: ['persist'])]
+    private Collection $contextualOptions;
 
     public function __construct()
     {
-        $this->customOptions = new ArrayCollection();
+        $this->contextualOptions = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -72,24 +72,24 @@ class OptionGroup
         return $this;
     }
 
-    public function getCustomOptions(): array
+    public function getContextualOptions(): array
     {
-        return $this->customOptions->toArray();
+        return $this->contextualOptions->toArray();
     }
 
-    public function addCustomOption(CustomOption $customOption): static
+    public function addContextualOption(ContextualOption $contextualOption): static
     {
-        if (!$this->customOptions->contains($customOption)) {
-            $customOption->setOptionGroup($this);
-            $this->customOptions->add($customOption);
+        if (!$this->contextualOptions->contains($contextualOption)) {
+            $contextualOption->setOptionGroup($this);
+            $this->contextualOptions->add($contextualOption);
         }
 
         return $this;
     }
 
-    public function removeCustomOption(CustomOption $customOption): static
+    public function removeContextualOption(ContextualOption $contextualOption): static
     {
-        $this->customOptions->removeElement($customOption);
+        $this->contextualOptions->removeElement($contextualOption);
 
         return $this;
     }

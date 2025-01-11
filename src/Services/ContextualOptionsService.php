@@ -4,7 +4,7 @@ namespace Stringkey\OptionMapperBundle\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Stringkey\MetadataCoreBundle\Entity\Context;
-use Stringkey\OptionMapperBundle\Entity\CustomOption;
+use Stringkey\OptionMapperBundle\Entity\ContextualOption;
 use Stringkey\OptionMapperBundle\Entity\OptionGroup;
 use Stringkey\OptionMapperBundle\Entity\OptionLink;
 use Stringkey\OptionMapperBundle\Exception\IdenticalContextException;
@@ -23,16 +23,16 @@ class ContextualOptionsService
         string      $name,
         string      $externalReference,
         bool        $enabled = true,
-    ): CustomOption {
-        $customOption = new CustomOption();
+    ): ContextualOption {
+        $contextualOption = new ContextualOption();
 
-        $customOption->setOptionGroup($optionGroup);
-        $customOption->setContext($context);
-        $customOption->setName($name);
-        $customOption->setExternalReference($externalReference);
-        $customOption->setEnabled($enabled);
+        $contextualOption->setOptionGroup($optionGroup);
+        $contextualOption->setContext($context);
+        $contextualOption->setName($name);
+        $contextualOption->setExternalReference($externalReference);
+        $contextualOption->setEnabled($enabled);
 
-        return $customOption;
+        return $contextualOption;
     }
 
     public function create(OptionLink $optionLink, bool $flushNow = true): void
@@ -44,8 +44,8 @@ class ContextualOptionsService
     }
 
     public static function constructOptionLink(
-        CustomOption $sourceOption,
-        CustomOption $targetOption,
+        ContextualOption $sourceOption,
+        ContextualOption $targetOption,
         int $ordinality = 0
     ): OptionLink {
 

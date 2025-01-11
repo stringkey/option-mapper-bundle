@@ -27,13 +27,13 @@ class OptionLink
     protected bool $autoResolve;
 
     #[ORM\JoinColumn(name: 'source_option_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[ORM\ManyToOne(targetEntity: CustomOption::class, inversedBy: 'optionLinks')]
+    #[ORM\ManyToOne(targetEntity: ContextualOption::class, inversedBy: 'optionLinks')]
     #[Gedmo\SortableGroup]
-    protected ?CustomOption $sourceOption;
+    protected ?ContextualOption $sourceOption;
 
     #[ORM\JoinColumn(name: 'target_option_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[ORM\ManyToOne(targetEntity: CustomOption::class, inversedBy: 'optionLinks')]
-    protected ?CustomOption $targetOption;
+    #[ORM\ManyToOne(targetEntity: ContextualOption::class, inversedBy: 'optionLinks')]
+    protected ?ContextualOption $targetOption;
 
     use TimestampableEntity;
 
@@ -67,20 +67,20 @@ class OptionLink
         $this->autoResolve = $autoResolve;
     }
 
-    public function setSourceOption(?CustomOption $customOption): static
+    public function setSourceOption(?ContextualOption $contextualOption): static
     {
-        $this->sourceOption = $customOption;
-        $customOption->addOptionLink($this);
+        $this->sourceOption = $contextualOption;
+        $contextualOption->addOptionLink($this);
 
         return $this;
     }
 
-    public function getSourceOption(): CustomOption
+    public function getSourceOption(): ContextualOption
     {
         return $this->sourceOption;
     }
 
-    public function setTargetOption(CustomOption $targetOption): static
+    public function setTargetOption(ContextualOption $targetOption): static
     {
         $this->targetOption = $targetOption;
         $targetOption->addOptionLink($this);
@@ -88,7 +88,7 @@ class OptionLink
         return $this;
     }
 
-    public function getTargetOption(): CustomOption
+    public function getTargetOption(): ContextualOption
     {
         return $this->targetOption;
     }
@@ -108,7 +108,7 @@ class OptionLink
     }
 
     // todo: Move to service when created
-    public static function construct(CustomOption $sourceOption, CustomOption $targetOption): static
+    public static function construct(ContextualOption $sourceOption, ContextualOption $targetOption): static
     {
         $optionLink = new OptionLink();
 

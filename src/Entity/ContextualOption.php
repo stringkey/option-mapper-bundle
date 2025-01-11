@@ -7,15 +7,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Stringkey\MetadataCoreBundle\Entity\Context;
-use Stringkey\OptionMapperBundle\Repository\CustomOptionRepository;
+use Stringkey\OptionMapperBundle\Repository\ContextualOptionRepository;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Table(name: 'custom_option')]
 #[ORM\Index(columns: ['external_reference'])]
 #[ORM\UniqueConstraint(fields: ["context", "optionGroup", "externalReference"])]
-#[ORM\Entity(repositoryClass: CustomOptionRepository::class)]
-class CustomOption
+#[ORM\Entity(repositoryClass: ContextualOptionRepository::class)]
+class ContextualOption
 {
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
@@ -30,14 +30,14 @@ class CustomOption
     protected string $externalReference;
 
     #[ORM\JoinColumn(name: 'option_group_id', referencedColumnName: 'id', nullable: false)]
-    #[ORM\ManyToOne(targetEntity: OptionGroup::class, inversedBy: 'customOptions')]
+    #[ORM\ManyToOne(targetEntity: OptionGroup::class, inversedBy: 'contextualOptions')]
     protected OptionGroup $optionGroup;
 
     #[ORM\JoinColumn(name: 'context_id', referencedColumnName: 'id', nullable: false)]
     #[ORM\ManyToOne(targetEntity: Context::class)]
     protected Context $context;
 
-    #[ORM\OneToMany(targetEntity: OptionLink::class, mappedBy: 'customOption', cascade: ['persist'])]
+    #[ORM\OneToMany(targetEntity: OptionLink::class, mappedBy: 'contextualOption', cascade: ['persist'])]
     protected Collection $optionLinks;
 
     #[ORM\Column(name: 'enabled', type: 'boolean', nullable: false)]

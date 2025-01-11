@@ -3,7 +3,7 @@
 namespace Stringkey\OptionMapperBundle\Form;
 
 use Stringkey\MetadataCoreBundle\Entity\Context;
-use Stringkey\OptionMapperBundle\Entity\CustomOption;
+use Stringkey\OptionMapperBundle\Entity\ContextualOption;
 use Stringkey\OptionMapperBundle\Entity\OptionGroup;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -11,7 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CustomOptionType extends AbstractType
+class ContextualOptionType extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -29,6 +29,6 @@ class CustomOptionType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => CustomOption::class]);
+        $resolver->setDefaults(['data_class' => ContextualOption::class]);
     }
 }
