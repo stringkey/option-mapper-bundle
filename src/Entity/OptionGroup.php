@@ -106,7 +106,7 @@ class OptionGroup
         return $this;
     }
 
-    public function getMasterContext(?Context $masterContext): ?Context
+    public function getMasterContext(): ?Context
     {
         return $this->masterContext;
     }
