@@ -5,6 +5,7 @@ namespace Stringkey\OptionMapperBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Stringkey\MetadataCoreBundle\Entity\Context;
 use Stringkey\OptionMapperBundle\Enum\GroupKind;
 use Stringkey\OptionMapperBundle\Repository\OptionGroupRepository;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -27,6 +28,10 @@ class OptionGroup
 
     #[ORM\Column(name: 'groupKind', type: 'string', nullable: false, enumType: GroupKind::class)]
     protected GroupKind $groupKind = GroupKind::UserDefined;
+
+    #[ORM\JoinColumn(name: 'master_context_id', referencedColumnName: 'id', nullable: true)]
+    #[ORM\ManyToOne(targetEntity: Context::class)]
+    protected ?Context $masterContext = null;
 
     #[ORM\OneToMany(targetEntity: ContextualOption::class, mappedBy: 'optionGroup', cascade: ['persist'])]
     private Collection $contextualOptions;
@@ -92,6 +97,18 @@ class OptionGroup
         $this->contextualOptions->removeElement($contextualOption);
 
         return $this;
+    }
+
+    public function setMasterContext(?Context $masterContext): OptionGroup
+    {
+        $this->masterContext = $masterContext;
+
+        return $this;
+    }
+
+    public function getMasterContext(?Context $masterContext): ?Context
+    {
+        return $this->masterContext;
     }
 
     public function __toString(): string
