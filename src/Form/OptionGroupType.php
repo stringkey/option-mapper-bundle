@@ -2,8 +2,10 @@
 
 namespace Stringkey\OptionMapperBundle\Form;
 
+use Stringkey\MetadataCoreBundle\Entity\Context;
 use Stringkey\OptionMapperBundle\Entity\OptionGroup;
 use Stringkey\OptionMapperBundle\Enum\GroupKind;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -19,6 +21,7 @@ class OptionGroupType extends AbstractType
     {
         $builder->add('name', TextType::class);
         $builder->add('groupKind', EnumType::class, ['class' => GroupKind::class]);
+        $builder->add('masterContext', EntityType::class, ['class' => Context::class]);
     }
 
     /**
