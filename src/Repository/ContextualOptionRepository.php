@@ -97,9 +97,6 @@ class ContextualOptionRepository extends ServiceEntityRepository
         self::addContextFilter($queryBuilder, $context);
         self::addExternalReferenceFilter($queryBuilder, $externalReference);
 
-        echo $queryBuilder->getQuery()->getSQL() . PHP_EOL;
-        dump($queryBuilder->getParameters());
-        
         return $queryBuilder->getQuery()->getOneOrNullResult();
     }
 

@@ -5,12 +5,13 @@ namespace Stringkey\OptionMapperBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Stringkey\OptionMapperBundle\Repository\OptionLinkRepository;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Table(name: 'option_link')]
-#[ORM\UniqueConstraint(name: 'search_idx_option_link', fields: ['sourceOption', 'targetOption'])]
-#[ORM\Entity]
+#[ORM\UniqueConstraint(fields: ['sourceOption', 'targetOption'])]
+#[ORM\Entity(repositoryClass: OptionLinkRepository::class, readOnly: true)]
 class OptionLink
 {
     #[ORM\Id]
@@ -21,10 +22,10 @@ class OptionLink
 
     #[ORM\Column(name: 'ordinality', type: 'integer')]
     #[Gedmo\SortablePosition]
-    protected int $ordinality;
+    protected int $ordinality = 0;
 
     #[ORM\Column(name: 'auto_resolve', type: 'boolean', nullable: false)]
-    protected bool $autoResolve;
+    protected bool $autoResolve = false;
 
     #[ORM\JoinColumn(name: 'source_option_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: ContextualOption::class)]

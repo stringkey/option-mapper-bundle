@@ -72,6 +72,6 @@ class OptionLinkRepository extends ServiceEntityRepository
     public static function addTargetOptionFilter(QueryBuilder $queryBuilder, ContextualOption $contextualOption, string $alias = self::ALIAS): void
     {
         $queryBuilder->andWhere($alias . '.targetOption = :targetOption');
-        $queryBuilder->setParameter('targetOption', $contextualOption->getId());
+        $queryBuilder->setParameter('targetOption', $contextualOption->getId(), UuidType::NAME);
     }
 }
