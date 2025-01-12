@@ -11,6 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Stringkey\MetadataCoreBundle\Entity\Context;
 use Stringkey\OptionMapperBundle\Entity\ContextualOption;
 use Stringkey\OptionMapperBundle\Entity\OptionGroup;
+use Symfony\Bridge\Doctrine\Types\UuidType;
 
 class ContextualOptionRepository extends ServiceEntityRepository
 {
@@ -25,7 +26,7 @@ class ContextualOptionRepository extends ServiceEntityRepository
     {
         $queryBuilder = $this->createQueryBuilder(self::ALIAS);
 
-        self::addEnabledFilter($queryBuilder, true);
+        $queryBuilder->orderBy(self::ALIAS . '.name', 'ASC');
 
         return $queryBuilder;
     }
@@ -36,9 +37,36 @@ class ContextualOptionRepository extends ServiceEntityRepository
 
         self::addOptionGroupFilter($queryBuilder, $optionGroup);
         self::addContextFilter($queryBuilder, $context);
-        self::addNamesFilter($queryBuilder, [$name]);
+        self::addNameFilter($queryBuilder, $name);
 
         return $queryBuilder->getQuery()->getOneOrNullResult();
+    }
+    
+    /**
+     * Find all target ContextualOption entities that are linked to the source Contextual options within a single context
+     */
+    public function findMappedOptions(OptionGroup $optionGroup, Context $sourceContext)
+    {
+        $queryBuilder = $this->getQueryBuilder();
+        $sourceOptionAlias = 'sourceOption';
+        $targetOptionAlias = 'targetOption';
+        self::joinSourceToTarget($queryBuilder, $sourceOptionAlias, $targetOptionAlias);
+
+        // You are selecting the target options, that are joined with a link to a source option
+        // so we are working our way backwards from target to source
+        self::addOptionGroupFilter($queryBuilder, $optionGroup, $sourceOptionAlias);
+        self::addContextFilter($queryBuilder, $sourceContext, $sourceOptionAlias);
+
+        ContextualOptionRepository::addContextFilter($queryBuilder, $sourceContext, $sourceOptionAlias);
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    private static function joinSourceToTarget(QueryBuilder $queryBuilder, string $sourceAlias, string $targetAlias): void
+    {
+        // ContextualOption <source> -> Optionlink <OptionLink> <-- ContextualOption <target>
+        OptionLinkRepository::joinSourceOption($queryBuilder, $sourceAlias);
+        OptionLinkRepository::joinTargetOption($queryBuilder, $targetAlias);
     }
 
     /**
@@ -48,7 +76,6 @@ class ContextualOptionRepository extends ServiceEntityRepository
     {
         $queryBuilder = $this->createQueryBuilder(self::ALIAS, self::ALIAS . '.externalReference');
 
-        self::addEnabledFilter($queryBuilder, true);
         self::addOptionGroupFilter($queryBuilder, $optionGroup);
         self::addContextFilter($queryBuilder, $context);
         self::addNamesFilter($queryBuilder, $names);
@@ -60,9 +87,9 @@ class ContextualOptionRepository extends ServiceEntityRepository
      * @throws NonUniqueResultException
      */
     public function findOneByExternalReference(
+        string $externalReference,
         OptionGroup $optionGroup,
         Context $context,
-        string $externalReference,
     ): ?ContextualOption {
         $queryBuilder = $this->getQueryBuilder();
 
@@ -70,6 +97,9 @@ class ContextualOptionRepository extends ServiceEntityRepository
         self::addContextFilter($queryBuilder, $context);
         self::addExternalReferenceFilter($queryBuilder, $externalReference);
 
+        echo $queryBuilder->getQuery()->getSQL() . PHP_EOL;
+        dump($queryBuilder->getParameters());
+        
         return $queryBuilder->getQuery()->getOneOrNullResult();
     }
 
@@ -85,7 +115,7 @@ class ContextualOptionRepository extends ServiceEntityRepository
 
     public static function addNameFilter(QueryBuilder $queryBuilder, string $name, string $alias = self::ALIAS): void
     {
-        $queryBuilder->andWhere($alias . '.name = :name)');
+        $queryBuilder->andWhere($alias . '.name = :name');
         $queryBuilder->setParameter('name', $name);
     }
 
@@ -107,42 +137,61 @@ class ContextualOptionRepository extends ServiceEntityRepository
         QueryBuilder $queryBuilder,
         Context $context,
         string $alias = self::ALIAS
-    ): void
+    ): string
     {
-        $queryBuilder->andWhere($alias . '.context = :context');
-        $queryBuilder->setParameter('context', $context);
+        $parameterName = $alias . 'Context';
+
+        $queryBuilder->andWhere($alias . '.context = :' . $parameterName);
+        $queryBuilder->setParameter($parameterName, $context->getId(), UuidType::NAME);
+
+        return $parameterName;
     }
 
     public static function addContextsFilter(
         QueryBuilder $queryBuilder,
         array $contexts,
         string $alias = self::ALIAS
-    ): void {
-        $queryBuilder->andWhere($alias . '.context IN (:contexts)');
-        $queryBuilder->setParameter('contexts', $contexts);
+    ): string {
+        $parameterName = $alias . 'Contexts';
+        // todo: Check if this works with a collection of objects that have Uuids as identifiers
+        $queryBuilder->andWhere($alias . '.context IN (:' . $parameterName . ')');
+        $queryBuilder->setParameter($parameterName, $contexts);
+
+        return $parameterName;
     }
 
-    public static function addOptionGroupFilter(QueryBuilder $queryBuilder, OptionGroup $optionGroup): void
-    {
-        $queryBuilder->andWhere(self::ALIAS . '.optionGroup = :optionGroup');
-        $queryBuilder->setParameter('optionGroup', $optionGroup);
+    public static function addOptionGroupFilter(
+        QueryBuilder $queryBuilder,
+        OptionGroup $optionGroup,
+        $optionAlias = self::ALIAS
+    ): void {
+        $queryBuilder->andWhere($optionAlias . '.optionGroup = :optionGroup');
+        $queryBuilder->setParameter('optionGroup', $optionGroup->getId(), UuidType::NAME);
     }
 
     public static function addExternalReferenceFilter(
         QueryBuilder $queryBuilder,
-        string $externalId,
+        string $externalReference,
         string $alias = self::ALIAS
-    ): void {
-        $queryBuilder->andWhere($alias . '.externalId = :externalId');
-        $queryBuilder->setParameter('externalId', $externalId);
+    ): string {
+        $parameterName = $alias . 'ExternalReference';
+
+        $queryBuilder->andWhere($alias . '.externalReference = :' . $parameterName);
+        $queryBuilder->setParameter($parameterName, $externalReference);
+
+        return $parameterName;
     }
 
     public static function addExternalReferencesFilter(
         QueryBuilder $queryBuilder,
         array $externalReferences,
         string $alias = self::ALIAS
-    ): void {
-        $queryBuilder->andWhere($alias . '.externalReference IN (:externalReferences)');
-        $queryBuilder->setParameter('externalReferences', $externalReferences);
+    ): string {
+        $parameterName = $alias . 'ExternalReferences';
+
+        $queryBuilder->andWhere($alias . '.externalReference IN (:'.$parameterName.')');
+        $queryBuilder->setParameter($parameterName, $externalReferences);
+
+        return $parameterName;
     }
 }

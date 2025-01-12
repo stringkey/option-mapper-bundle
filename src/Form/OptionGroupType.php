@@ -21,7 +21,14 @@ class OptionGroupType extends AbstractType
     {
         $builder->add('name', TextType::class);
         $builder->add('groupKind', EnumType::class, ['class' => GroupKind::class]);
-        $builder->add('masterContext', EntityType::class, ['class' => Context::class]);
+        $builder->add(
+            'masterContext',
+            EntityType::class,
+            [
+                'class' => Context::class,
+                'placeholder' => 'Optionally select a master context',
+            ]
+        );
     }
 
     /**

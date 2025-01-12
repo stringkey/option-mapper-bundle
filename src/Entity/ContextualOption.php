@@ -2,8 +2,6 @@
 
 namespace Stringkey\OptionMapperBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Stringkey\MetadataCoreBundle\Entity\Context;
@@ -14,6 +12,7 @@ use Symfony\Component\Uid\Uuid;
 #[ORM\Table(name: 'custom_option')]
 #[ORM\Index(columns: ['external_reference'])]
 #[ORM\UniqueConstraint(fields: ["context", "optionGroup", "externalReference"])]
+#[ORM\UniqueConstraint(fields: ["context", "optionGroup", "name"])]
 #[ORM\Entity(repositoryClass: ContextualOptionRepository::class)]
 class ContextualOption
 {
@@ -37,17 +36,10 @@ class ContextualOption
     #[ORM\ManyToOne(targetEntity: Context::class)]
     protected Context $context;
 
-    #[ORM\OneToMany(targetEntity: OptionLink::class, mappedBy: 'contextualOption', cascade: ['persist'])]
-    protected Collection $optionLinks;
-
     #[ORM\Column(name: 'enabled', type: 'boolean', nullable: false)]
     private bool $enabled = false;
 
     use TimestampableEntity;
-
-    public function __construct() {
-        $this->optionLinks = new ArrayCollection();
-    }
 
     public function getId(): ?Uuid
     {
@@ -66,6 +58,13 @@ class ContextualOption
         return $this->name;
     }
 
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
     public function getExternalReference(): string
     {
         return $this->externalReference;
@@ -74,25 +73,6 @@ class ContextualOption
     public function setExternalReference(string $externalReference): static
     {
         $this->externalReference = $externalReference;
-
-        return $this;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getContext(): ?Context
-    {
-        return $this->context;
-    }
-
-    public function setContext(Context $context): static
-    {
-        $this->context = $context;
 
         return $this;
     }
@@ -107,6 +87,18 @@ class ContextualOption
         $this->optionGroup = $optionGroup;
     }
 
+    public function getContext(): ?Context
+    {
+        return $this->context;
+    }
+
+    public function setContext(Context $context): static
+    {
+        $this->context = $context;
+
+        return $this;
+    }
+
     public function isEnabled(): bool
     {
         return $this->enabled;
@@ -115,25 +107,6 @@ class ContextualOption
     public function setEnabled(bool $enabled): static
     {
         $this->enabled = $enabled;
-
-        return $this;
-    }
-
-    public function getOptionLinks(): array
-    {
-        return $this->optionLinks->toArray();
-    }
-
-    public function addOptionLink(OptionLink $optionLink): static
-    {
-        $this->optionLinks->add($optionLink);
-
-        return $this;
-    }
-
-    public function removeOptionLink(OptionLink $optionLink): static
-    {
-        $this->optionLinks->removeElement($optionLink);
 
         return $this;
     }

@@ -4,13 +4,15 @@ namespace Stringkey\OptionMapperBundle\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Stringkey\MetadataCoreBundle\Entity\Context;
+use Stringkey\MetadataCoreBundle\Repository\ContextRepository;
 use Stringkey\OptionMapperBundle\Entity\ContextualOption;
 use Stringkey\OptionMapperBundle\Entity\OptionGroup;
 use Stringkey\OptionMapperBundle\Entity\OptionLink;
+use Stringkey\OptionMapperBundle\Enum\GroupKind;
 use Stringkey\OptionMapperBundle\Exception\IdenticalContextException;
 use Stringkey\OptionMapperBundle\Exception\UnequalOptionGroupException;
 
-class ContextualOptionsService
+class ContextualOptionService
 {
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
@@ -66,5 +68,41 @@ class ContextualOptionsService
         $optionLink->setOrdinality($ordinality);
 
         return $optionLink;
+    }
+
+    public function findOrCreateOptionGroupByName(string $name, GroupKind $groupKind = GroupKind::UserDefined): OptionGroup
+    {
+        $optionGroupRepository  = $this->entityManager->getRepository(OptionGroup::class);
+        $optionGroup = $optionGroupRepository->findOneBy(['name' => $name]);
+
+        if (!$optionGroup) {
+            $optionGroup = new OptionGroup();
+
+            $optionGroup->setName($name);
+            $optionGroup->setGroupKind($groupKind);
+
+            $this->entityManager->persist($optionGroup);
+            $this->entityManager->flush();
+        }
+
+        return $optionGroup;
+    }
+
+    public function findOrCreateContextByName(string $name): Context
+    {
+        /** @var ContextRepository $contextRepository */
+        $contextRepository  = $this->entityManager->getRepository(Context::class);
+        $context = $contextRepository->findByName($name);
+
+        if (!$context) {
+            $context = new Context();
+
+            $context->setName($name);
+
+            $this->entityManager->persist($context);
+            $this->entityManager->flush();
+        }
+
+        return $context;
     }
 }

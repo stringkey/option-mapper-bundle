@@ -27,12 +27,12 @@ class OptionLink
     protected bool $autoResolve;
 
     #[ORM\JoinColumn(name: 'source_option_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[ORM\ManyToOne(targetEntity: ContextualOption::class, inversedBy: 'optionLinks')]
+    #[ORM\ManyToOne(targetEntity: ContextualOption::class)]
     #[Gedmo\SortableGroup]
     protected ?ContextualOption $sourceOption;
 
     #[ORM\JoinColumn(name: 'target_option_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
-    #[ORM\ManyToOne(targetEntity: ContextualOption::class, inversedBy: 'optionLinks')]
+    #[ORM\ManyToOne(targetEntity: ContextualOption::class)]
     protected ?ContextualOption $targetOption;
 
     use TimestampableEntity;
@@ -70,7 +70,6 @@ class OptionLink
     public function setSourceOption(?ContextualOption $contextualOption): static
     {
         $this->sourceOption = $contextualOption;
-        $contextualOption->addOptionLink($this);
 
         return $this;
     }
@@ -83,7 +82,6 @@ class OptionLink
     public function setTargetOption(ContextualOption $targetOption): static
     {
         $this->targetOption = $targetOption;
-        $targetOption->addOptionLink($this);
 
         return $this;
     }
