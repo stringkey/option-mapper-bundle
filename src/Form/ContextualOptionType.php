@@ -18,10 +18,24 @@ class ContextualOptionType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('optionGroup', EntityType::class, ['class' => OptionGroup::class]);
+        $contextualOption = $builder->getData();
+
+        // The implications of 'moving' an option to a different group of context are so large that we do not allow this
+        $isNew = is_null($contextualOption->getId());
+
+        $builder->add('optionGroup', EntityType::class, [
+                'class' => OptionGroup::class,
+                'disabled' => !$isNew,
+            ]
+        );
+        $builder->add('context', EntityType::class, [
+                'class' => Context::class,
+                'disabled' => !$isNew,
+            ]
+        );
+
         $builder->add('name', TextType::class);
         $builder->add('externalReference', TextType::class);
-        $builder->add('context', EntityType::class, ['class' => Context::class]);
     }
 
     /**
@@ -29,6 +43,14 @@ class ContextualOptionType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults(['data_class' => ContextualOption::class]);
+        $resolver->setDefaults(
+            [
+                'data_class' => ContextualOption::class,
+                'option_group' => null,
+                'context' => null,
+            ]
+        );
+        $resolver->addAllowedTypes('option_group', [OptionGroup::class, 'null']);
+        $resolver->addAllowedTypes('context', [Context::class, 'null']);
     }
 }

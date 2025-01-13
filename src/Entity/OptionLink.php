@@ -5,6 +5,8 @@ namespace Stringkey\OptionMapperBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Stringkey\OptionMapperBundle\Exception\IdenticalContextException;
+use Stringkey\OptionMapperBundle\Exception\UnequalOptionGroupException;
 use Stringkey\OptionMapperBundle\Repository\OptionLinkRepository;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
@@ -37,6 +39,11 @@ class OptionLink
     protected ?ContextualOption $targetOption;
 
     use TimestampableEntity;
+
+    private function __constructor()
+    {
+
+    }
 
     public function getId(): ?Uuid
     {
@@ -107,12 +114,27 @@ class OptionLink
     }
 
     // todo: Move to service when created
-    public static function construct(ContextualOption $sourceOption, ContextualOption $targetOption): static
-    {
+    public static function construct(
+        ContextualOption $sourceOption,
+        ContextualOption $targetOption,
+        int $ordinality = 0
+    ): static {
+
+        // Check if the source and the target group are the same
+        if ($sourceOption->getOptionGroup() !== $targetOption->getOptionGroup()) {
+            throw new UnequalOptionGroupException("Source and target options need to be part of the same option group");
+        }
+
+        // Check if the source and the target contexts are different
+        if ($sourceOption->getContext() === $targetOption->getContext()) {
+            throw new IdenticalContextException("Source and target options must have different contexts");
+        }
+
         $optionLink = new OptionLink();
 
         $optionLink->setSourceOption($sourceOption);
         $optionLink->setTargetOption($targetOption);
+        $optionLink->setOrdinality($ordinality);
 
         return $optionLink;
     }

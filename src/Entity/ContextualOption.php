@@ -8,12 +8,23 @@ use Stringkey\MetadataCoreBundle\Entity\Context;
 use Stringkey\OptionMapperBundle\Repository\ContextualOptionRepository;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Table(name: 'custom_option')]
 #[ORM\Index(columns: ['external_reference'])]
 #[ORM\UniqueConstraint(fields: ["context", "optionGroup", "externalReference"])]
 #[ORM\UniqueConstraint(fields: ["context", "optionGroup", "name"])]
 #[ORM\Entity(repositoryClass: ContextualOptionRepository::class)]
+#[UniqueEntity(
+    fields: ['name', 'optionGroup', 'context'],
+    message: 'The option "{{ name }}" already exists for this context in this group.',
+    errorPath: 'name',
+)]
+#[UniqueEntity(
+    fields: ['externalReference', 'optionGroup', 'context'],
+    message: 'The option "{{ name }}" already exists with this reference within this context and group.',
+    errorPath: 'externalReference',
+)]
 class ContextualOption
 {
     #[ORM\Id]
