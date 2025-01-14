@@ -1,21 +1,33 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 namespace Stringkey\OptionMapperBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
-use Stringkey\OptionMapperBundle\Exception\IdenticalContextException;
-use Stringkey\OptionMapperBundle\Exception\UnequalOptionGroupException;
 use Stringkey\OptionMapperBundle\Repository\OptionLinkRepository;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Table(name: 'option_link')]
 #[ORM\UniqueConstraint(fields: ['sourceOption', 'targetOption'])]
 #[ORM\Entity(repositoryClass: OptionLinkRepository::class, readOnly: true)]
-class OptionLink
+// todo: Check to configure this in an XML file to allow overrides by the end user?
+#[UniqueEntity(
+    fields: ['sourceOption', 'targetOption'],
+    message: 'There is already a link between these options.'
+)]
+final class OptionLink
 {
+    use TimestampableEntity;
+    public const SAME_CONTEXT_ERROR = '';
+    public const DIFFERENT_GROUP_ERROR = '';
+
     #[ORM\Id]
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
@@ -37,13 +49,6 @@ class OptionLink
     #[ORM\JoinColumn(name: 'target_option_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: ContextualOption::class)]
     protected ?ContextualOption $targetOption;
-
-    use TimestampableEntity;
-
-    private function __constructor()
-    {
-
-    }
 
     public function getId(): ?Uuid
     {
@@ -106,36 +111,49 @@ class OptionLink
         return $this;
     }
 
-    public function removeSourceOption(): static
+    public function removeSourceOption(): OptionLink
     {
         $this->sourceOption = null;
 
         return $this;
     }
 
-    // todo: Move to service when created
-    public static function construct(
-        ContextualOption $sourceOption,
-        ContextualOption $targetOption,
-        int $ordinality = 0
-    ): static {
+    public function hasDifferentGroups(): bool
+    {
+        return $this->sourceOption->getOptionGroup() !== $this->targetOption->getOptionGroup();
+    }
 
-        // Check if the source and the target group are the same
-        if ($sourceOption->getOptionGroup() !== $targetOption->getOptionGroup()) {
-            throw new UnequalOptionGroupException("Source and target options need to be part of the same option group");
+    public function hasSameContext(): bool
+    {
+        return $this->sourceOption->getContext() === $this->targetOption->getContext();
+    }
+
+    /**
+     * @todo As per symfony bundle best practices the assertion should be configured as in XML format
+     *       to allow the user to override the behavior
+     *       see: https://symfony.com/doc/current/reference/constraints/Callback.html
+     */
+    #[Assert\Callback]
+    public function validate(ExecutionContextInterface $context, mixed $payload): void
+    {
+        if ($this->hasSameContext()) {
+            $context->buildViolation('A link between two options must be between different contexts')
+                ->atPath('targetOption')
+                ->addViolation();
         }
 
-        // Check if the source and the target contexts are different
-        if ($sourceOption->getContext() === $targetOption->getContext()) {
-            throw new IdenticalContextException("Source and target options must have different contexts");
+        if ($this->hasDifferentGroups()) {
+            $context->buildViolation('The linked options must be part of the same group')
+                ->atPath('targetOption')
+                ->addViolation();
         }
+    }
 
-        $optionLink = new OptionLink();
-
-        $optionLink->setSourceOption($sourceOption);
-        $optionLink->setTargetOption($targetOption);
-        $optionLink->setOrdinality($ordinality);
-
-        return $optionLink;
+    public function __toString(): string
+    {
+        return
+            $this->sourceOption->getContext()->getName().'/'.$this->sourceOption->getName().
+            ' -> '.
+            $this->targetOption->getContext()->getName().'/'.$this->targetOption->getName();
     }
 }

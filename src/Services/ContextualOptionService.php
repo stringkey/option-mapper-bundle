@@ -56,6 +56,29 @@ class ContextualOptionService
     ): OptionLink {
         return Optionlink::construct($sourceOption, $targetOption, $ordinality);
     }
+    public static function construct(
+        ContextualOption $sourceOption,
+        ContextualOption $targetOption,
+        int $ordinality = 0
+    ): OptionLink {
+        $optionLink = new OptionLink();
+
+        $optionLink->setSourceOption($sourceOption);
+        $optionLink->setTargetOption($targetOption);
+        $optionLink->setOrdinality($ordinality);
+
+        // Check if the source and the target group are the same
+        if ($optionLink->hasDifferentGroups()) {
+            throw new UnequalOptionGroupException("Source and target options need to be part of the same option group");
+        }
+
+        // Check if the source and the target contexts are different
+        if ($optionLink->hasSameContext()) {
+            throw new IdenticalContextException("Source and target options must have different contexts");
+        }
+
+        return $optionLink;
+    }
 
     public function findOrCreateOptionGroupByName(string $name, GroupKind $groupKind = GroupKind::UserDefined): OptionGroup
     {

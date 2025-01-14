@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Stringkey\OptionMapperBundle\Form;
 
@@ -10,9 +12,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class OptionLinkType extends AbstractType
 {
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder->add(
@@ -43,11 +42,8 @@ class OptionLinkType extends AbstractType
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function configureOptions(OptionsResolver $resolver): void
     {
-//        $resolver->setDefaults(['data_class' => OptionLink::class]);
+        //        $resolver->setDefaults(['data_class' => OptionLink::class]);
     }
 }
