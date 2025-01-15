@@ -5,6 +5,7 @@ namespace Stringkey\OptionMapperBundle\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Stringkey\MapperBundle\Entity\MappableEntity;
 use Stringkey\MetadataCoreBundle\Entity\Context;
 use Stringkey\OptionMapperBundle\Enum\GroupKind;
 use Stringkey\OptionMapperBundle\Repository\OptionGroupRepository;
@@ -29,6 +30,10 @@ class OptionGroup
     #[ORM\Column(name: 'groupKind', type: 'string', nullable: false, enumType: GroupKind::class)]
     private GroupKind $groupKind = GroupKind::UserDefined;
 
+    /**
+     * @description The master context can be set to specify a context that is
+     *              used as a master collection of options that all other options should relate to
+     */
     #[ORM\JoinColumn(name: 'master_context_id', referencedColumnName: 'id', nullable: true)]
     #[ORM\ManyToOne(targetEntity: Context::class)]
     private ?Context $masterContext = null;
@@ -109,6 +114,11 @@ class OptionGroup
     public function getMasterContext(): ?Context
     {
         return $this->masterContext;
+    }
+
+    public function setMappableEntity(MappableEntity $mappableEntity)
+    {
+        // todo: create the relation to this entity
     }
 
     public function __toString(): string

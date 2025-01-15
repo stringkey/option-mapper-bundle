@@ -54,7 +54,7 @@ class ContextualOptionService
         ContextualOption $targetOption,
         int $ordinality = 0
     ): OptionLink {
-        return Optionlink::construct($sourceOption, $targetOption, $ordinality);
+        return self::construct($sourceOption, $targetOption, $ordinality);
     }
     public static function construct(
         ContextualOption $sourceOption,

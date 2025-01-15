@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types = 1);
 
 namespace Stringkey\OptionMapperBundle\Repository;
 
@@ -63,6 +65,21 @@ class OptionLinkRepository extends ServiceEntityRepository
         return $targetAlias;
     }
 
+    public static function leftJoinTargetOption(
+        QueryBuilder $queryBuilder,
+        string $targetOptionAlias = 'targetOption',
+        string $linkAlias = OptionLinkRepository::ALIAS,
+    ): void {
+        if (!in_array($targetOptionAlias, $queryBuilder->getAllAliases())) {
+            $queryBuilder->leftJoin(
+                ContextualOption::class,
+                $targetOptionAlias,
+                Join::WITH,
+                $linkAlias.'.targetOption = '.$targetOptionAlias
+            );
+        }
+    }
+
     public static function addSourceOptionFilter(QueryBuilder $queryBuilder, ContextualOption $contextualOption, string $alias = self::ALIAS): void
     {
         $queryBuilder->andWhere($alias . '.sourceOption = :sourceOption');
@@ -73,5 +90,16 @@ class OptionLinkRepository extends ServiceEntityRepository
     {
         $queryBuilder->andWhere($alias . '.targetOption = :targetOption');
         $queryBuilder->setParameter('targetOption', $contextualOption->getId(), UuidType::NAME);
+    }
+
+    public static function addHasAutoResolveFilter(QueryBuilder $queryBuilder, string $alias = self::ALIAS): void
+    {
+        self::addAutoResolveFilter($queryBuilder, true, $alias);
+    }
+
+    public static function addAutoResolveFilter(QueryBuilder $queryBuilder, bool $autoResolve, string $alias = self::ALIAS): void
+    {
+        $queryBuilder->andWhere($alias . '.autoResolve = :autoResolve');
+        $queryBuilder->setParameter('autoResolve', $autoResolve);
     }
 }

@@ -11,7 +11,7 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Table(name: 'custom_option')]
-#[ORM\Index(columns: ['external_reference'])]
+#[ORM\Index(fields: ['externalReference'])] // required?
 #[ORM\UniqueConstraint(fields: ["context", "optionGroup", "externalReference"])]
 #[ORM\UniqueConstraint(fields: ["context", "optionGroup", "name"])]
 #[ORM\Entity(repositoryClass: ContextualOptionRepository::class)]
