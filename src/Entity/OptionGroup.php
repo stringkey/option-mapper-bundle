@@ -41,6 +41,9 @@ class OptionGroup
     #[ORM\OneToMany(targetEntity: ContextualOption::class, mappedBy: 'optionGroup', cascade: ['persist'])]
     private Collection $contextualOptions;
 
+    #[ORM\OneToOne(targetEntity: MappableEntity::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(name: 'mappable_entity_id', referencedColumnName: 'id', nullable: true)]
+    private ?MappableEntity $mappableEntity = null;
     public function __construct()
     {
         $this->contextualOptions = new ArrayCollection();
@@ -116,9 +119,14 @@ class OptionGroup
         return $this->masterContext;
     }
 
-    public function setMappableEntity(MappableEntity $mappableEntity)
+    public function setMappableEntity(?MappableEntity $mappableEntity)
     {
-        // todo: create the relation to this entity
+        $this->mappableEntity = $mappableEntity;
+    }
+
+    public function getMappableEntity(): ?MappableEntity
+    {
+        return $this->mappableEntity;
     }
 
     public function __toString(): string

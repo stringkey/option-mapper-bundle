@@ -2,6 +2,7 @@
 
 namespace Stringkey\OptionMapperBundle\Form;
 
+use Stringkey\MapperBundle\Entity\MappableEntity;
 use Stringkey\MetadataCoreBundle\Entity\Context;
 use Stringkey\OptionMapperBundle\Entity\OptionGroup;
 use Stringkey\OptionMapperBundle\Enum\GroupKind;
@@ -21,6 +22,12 @@ class OptionGroupType extends AbstractType
     {
         $builder->add('name', TextType::class);
         $builder->add('groupKind', EnumType::class, ['class' => GroupKind::class]);
+        $builder->add('mappableEntity', EntityType::class,
+            [
+                'class' => MappableEntity::class,
+                'placeholder' => 'Optionally select a entity to map',
+            ]
+        );
         $builder->add(
             'masterContext',
             EntityType::class,
