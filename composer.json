@@ -5,6 +5,11 @@
     "license": "MIT",
     "keywords": ["options", "mapper", "symfony", "bundle", "stringkey"],
     "homepage": "https://github.com/stringkey/option-mapper-bundle",
+    "autoload": {
+        "psr-4": {
+            "Stringkey\\OptionMapperBundle\\": "src/"
+        }
+    },
     "autoload-dev": {
         "psr-4": {
             "Stringkey\\OptionMapperBundle\\Tests\\": "tests/"
