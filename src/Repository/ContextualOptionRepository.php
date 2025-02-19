@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php 
+
+declare(strict_types=1);
 
 namespace Stringkey\OptionMapperBundle\Repository;
 
@@ -40,6 +42,20 @@ class ContextualOptionRepository extends ServiceEntityRepository
         self::addNameFilter($queryBuilder, $name);
 
         return $queryBuilder->getQuery()->getOneOrNullResult();
+    }
+    
+    /**
+     * @return ContextualOption[]
+     */
+    public function findByOptionGroupAndContext(OptionGroup $optionGroup, Context $context): array
+    {
+        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder->indexBy(ContextualOptionRepository::ALIAS, ContextualOptionRepository::ALIAS.'.externalReference');
+
+        self::addOptionGroupFilter($queryBuilder, $optionGroup);
+        self::addContextFilter($queryBuilder, $context);
+
+        return $queryBuilder->getQuery()->getResult();
     }
     
     /**
