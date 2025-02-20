@@ -45,7 +45,7 @@ class ContextualOption
     #[ORM\ManyToOne(targetEntity: OptionGroup::class, inversedBy: 'contextualOptions')]
     protected OptionGroup $optionGroup;
 
-    #[ORM\JoinColumn(name: 'context_id', referencedColumnName: 'id', nullable: false)]
+    #[ORM\JoinColumn(name: 'context_id', referencedColumnName: 'id', nullable: false, onDelete: "CASCADE")]
     #[ORM\ManyToOne(targetEntity: Context::class)]
     protected Context $context;
 
